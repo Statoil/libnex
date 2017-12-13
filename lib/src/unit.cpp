@@ -2,7 +2,7 @@
 #include <map>
 #include <stdexcept>
 
-#include <nexus/unit.hpp>
+#include <nex/private/unit.hpp>
 
 namespace nex {
 

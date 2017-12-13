@@ -26,7 +26,6 @@
 #include <set>
 
 
-#include <ert/util/build_config.h>
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
 #elif defined(HAVE_ARPA_INET_H)
@@ -37,7 +36,7 @@
 
 #include <ert/util/util.h>
 
-#include <nexus/util.hpp>
+#include <nex/private/util.hpp>
 
 using namespace nex;
 

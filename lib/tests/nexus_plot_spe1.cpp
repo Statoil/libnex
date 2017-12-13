@@ -20,12 +20,11 @@
 #include <array>
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <vector>
 
 
 #include <ert/util/test_util.hpp>
-#include <nexus/util.hpp>
+#include <nex/private/util.hpp>
 
 using namespace nex;
 
@@ -207,9 +206,7 @@ void test_spe1_class_varnames(const NexusPlot& plt) {
 
 
 int main(int argc, char* argv[]) {
-    std::stringstream ss;
-    ss << argv[1] << "/test-data/local/nexus/SPE1.plt";
-    const auto spe1 = load(ss.str());
+    const auto spe1 = load("data/SPE1.plt");
 
     test_spe1_header(spe1);
     test_spe1_classes(spe1);

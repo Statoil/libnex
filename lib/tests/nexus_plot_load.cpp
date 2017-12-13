@@ -25,7 +25,7 @@
 
 
 #include <ert/util/test_util.hpp>
-#include <nexus/util.hpp>
+#include <nex/private/util.hpp>
 
 
 void test_invalid_header1() {

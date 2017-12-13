@@ -18,7 +18,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <fstream>
-#include <sstream>
 #include <iostream>
 
 #include <ert/util/test_work_area.h>
@@ -27,16 +26,15 @@
 #include <ert/util/util.h>
 #include <ert/ecl/ecl_sum.h>
 
-#include <nexus/util.hpp>
+#include <nex/private/util.hpp>
 
 
-void test_create_ecl_sum(char *root_folder) {
-    test_work_area_type *work_area = test_work_area_alloc("nexus_header");
+void test_create_ecl_sum() {
 
-    std::stringstream ss;
-    ss << root_folder << "/test-data/local/nexus/SPE1.plt";
-    const nex::NexusPlot plt = nex::load(ss.str());
+    const nex::NexusPlot plt = nex::load("data/SPE1.plt");
     auto data = plt.data;
+
+    test_work_area_type *work_area = test_work_area_alloc("nexus_header");
 
     /* Write */
 
@@ -105,14 +103,13 @@ void test_create_ecl_sum(char *root_folder) {
  * from the beginning. Because of this, the indices where the data starts is
  * different in the nex and ecl representations.
  */
-void test_ecl_timesteps(char *root_folder) {
-    test_work_area_type *work_area = test_work_area_alloc("nexus_timesteps");
+void test_ecl_timesteps() {
 
-    std::stringstream ss;
-    ss << root_folder << "/test-data/local/nexus/SPE1_delayedWell.plt";
-    const nex::NexusPlot plt = nex::load(ss.str());
+    const nex::NexusPlot plt = nex::load("data/SPE1_delayedWell.plt");
     auto data = plt.data;
 
+    test_work_area_type *work_area = test_work_area_alloc("nexus_timesteps");
+    
     ecl_sum_type *ecl_sum = nex::ecl_summary( "ECL_CASE", false, plt );
     ecl_sum_fwrite( ecl_sum );
     ecl_sum_free( ecl_sum );
@@ -140,12 +137,8 @@ void test_ecl_timesteps(char *root_folder) {
     test_work_area_free(work_area);
 }
 
-void test_multiple_field(char *root_folder) {
-
-    std::stringstream ss;
-    ss << root_folder << "/test-data/local/nexus/SPE1.plt";
-    const nex::NexusPlot plt = nex::load(ss.str());
-
+void test_multiple_field() {
+    const nex::NexusPlot plt = nex::load("data/SPE1.plt");
 
     /* Check data */
     ecl_sum_type *ecl_sum1 = nex::ecl_summary( "ECL_CASE", false, plt, "FIELD" );
@@ -158,8 +151,8 @@ void test_multiple_field(char *root_folder) {
 
 int main(int argc, char **argv) {
     util_install_signals();
-    test_create_ecl_sum(argv[1]);
-    test_ecl_timesteps(argv[1]);
-    test_multiple_field(argv[1]);
+    test_create_ecl_sum();
+    test_ecl_timesteps();
+    test_multiple_field();
     exit(0);
 }

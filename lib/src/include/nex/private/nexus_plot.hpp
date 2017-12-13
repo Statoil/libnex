@@ -30,7 +30,7 @@
 #include <vector>
 
 #include <ert/ecl/ecl_sum.h>
-#include <nexus/unit.hpp>
+#include <nex/private/unit.hpp>
 
 namespace nex {
 

@@ -16,7 +16,7 @@
    for more details.
 */
 
-#include <nexus/nexus_plot.hpp>
+#include <nex/private/nexus_plot.hpp>
 
 namespace nex {
 

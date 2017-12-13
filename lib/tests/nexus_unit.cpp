@@ -4,7 +4,7 @@
 
 #include <ert/util/test_util.hpp>
 
-#include <nexus/unit.hpp>
+#include <nex/private/unit.hpp>
 
 
 void test_metric_bars_units() {

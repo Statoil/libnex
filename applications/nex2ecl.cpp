@@ -22,7 +22,7 @@
 
 #include <ert/util/util.h>
 
-#include "nexus/util.hpp"
+#include "nex/private/util.hpp"
 
 namespace {
 
