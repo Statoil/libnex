@@ -163,8 +163,9 @@ void test_spe1_region_rgs00002_ts97_all_variables(const NexusPlot& spe1) {
     }};
 
     auto data = spe1.data;
+
     auto pred_rgs00002_ts97 = [](const NexusData& d){
-        return is::instancename("RGS00002")(d)
+        return is::instancename( "RGS00002" )(d)
             && is::timestep( 97 )(d);
     };
     std::vector< NexusData > rgs00002_ts97;

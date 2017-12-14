@@ -87,7 +87,7 @@ namespace is {
         classname( std::array< char, 8 > x ) : value( x ) {}
         classname( const std::string& x ) {
             if (x.size() > value.max_size())
-                throw std::runtime_error("Could not make predicated, gived classname was larger than 8 bytes.");
+                throw std::runtime_error("Could not make predicate, gived classname was larger than 8 bytes.");
             std::copy(x.begin(), x.end(), value.begin());
             std::replace(value.begin(), value.end(), '\0', ' ');
         }
@@ -104,12 +104,12 @@ namespace is {
         instancename( std::array< char, 8 > x ) : value( x ) {}
         instancename( const std::string& x ) {
             if (x.size() > value.max_size())
-                throw std::runtime_error("Could not make predicated, gived instancename was larger than 8 bytes.");
+                throw std::runtime_error("Could not make predicate, gived instancename was larger than 8 bytes.");
             std::copy(x.begin(), x.end(), value.begin());
             std::replace(value.begin(), value.end(), '\0', ' ');
         }
         instancename( const char (&x)[9] ) {
-            std::copy(std::begin(x), std::end(x), value.begin());
+            std::copy(std::begin(x), std::begin(x) + 8, value.begin());
             std::replace(value.begin(), value.end(), '\0', ' ');
         }
         bool operator()( const NexusData& nd ) const {
@@ -121,7 +121,7 @@ namespace is {
         varname( std::array< char, 4 > x ) : value( x ) {}
         varname( const std::string& x ) {
             if (x.size() > value.max_size())
-                throw std::runtime_error("Could not make predicated, gived varname was larger than 8 bytes.");
+                throw std::runtime_error("Could not make predicate, gived varname was larger than 8 bytes.");
             std::copy(x.begin(), x.end(), value.begin());
             std::replace(value.begin(), value.end(), '\0', ' ');
         }

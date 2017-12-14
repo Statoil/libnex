@@ -1,0 +1,32 @@
+language: c++
+
+os:
+    - linux
+    - osx
+
+compiler:
+    - gcc
+    - clang
+
+matrix:
+    fast_finish: true
+    exclude:
+        - os: osx
+          compiler: gcc
+        - os: linux
+          compiler: clang
+
+before_script:
+    - git clone https://github.com/Statoil/libecl.git
+    - mkdir libecl/build
+    - pushd libecl/build
+    - cmake ..
+    - sudo make install
+    - popd
+
+script:
+    - mkdir build
+    - pushd build
+    - cmake ..
+    - make
+    - ctest --output-on-failure -VV
