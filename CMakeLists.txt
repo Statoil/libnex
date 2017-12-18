@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(nex)
+include(GNUInstallDirs)
 
 include(CheckFunctionExists)
 include(CheckIncludeFile)
@@ -7,6 +8,7 @@ include(CTest)
 
 find_package(ecl REQUIRED)
 
+check_include_file(getopt.h     HAVE_GETOPT_H)
 check_include_file(netinet/in.h HAVE_NETINET_IN_H)
 check_include_file(arpa/inet.h  HAVE_ARPA_INET_H)
 check_include_file(winsock2.h   HAVE_WINSOCK2_H)

@@ -1,0 +1,32 @@
+version: 1.0.{build}
+
+configuration:
+    - Release
+
+clone_depth: 1
+
+os: Visual Studio 2015
+image: Visual Studio 2015
+
+platform:
+    - x64
+
+environment:
+    SHARED: OFF
+
+matrix:
+    fast_finish: true
+
+build_script:
+    - git clone https://github.com/Statoil/libecl.git
+    - mkdir libecl\build
+    - ps: pushd libecl\build
+    - cmake .. -G"Visual Studio 14 2015 Win64" -DERT_BUILD_CXX=ON -DBUILD_SHARED_LIBS=OFF
+    - cmake --build . --config "%configuration%"
+    - ps: popd
+    - mkdir build
+    - ps: pushd build
+    - cmake .. -G"Visual Studio 14 2015 Win64"
+    - cmake --build . --config "%configuration%"
+    - ctest -C "%configuration%" --output-on-failure
+    - ps: popd
