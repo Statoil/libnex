@@ -1,9 +1,17 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(nex)
+set(PACKAGE_VERSION 0.0.2)
 
 include(CheckFunctionExists)
 include(CheckIncludeFile)
 include(CTest)
+
+find_package(PythonInterp REQUIRED)
+if (NOT PYTHON_EXECUTABLE)
+    message(SEND_ERROR "Could not find python executable")
+    return()
+endif()
+set(PYBIND11_PYTHON_VERSION ${PYTHON_VERSION_STRING})
 
 find_package(ecl REQUIRED)
 
@@ -21,8 +29,15 @@ else()
     message(FATAL_ERROR "Could not find htons")
 endif()
 
-set(CXX_STANDARD -std=c++11 CACHE STRING "C++ revision flag")
-set(testdata ${CMAKE_CURRENT_SOURCE_DIR}/tests/data)
+set(BUILD_SHARED_LIBS ON)
+set(CPP_STANDARD -std=c++11 CACHE STRING "C++ revision flag")
+set(PYBIND11_CPP_STANDARD ${CPP_STANDARD})
+set(testdata ${CMAKE_CURRENT_SOURCE_DIR}/test-data)
 
+set(NEX_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/src/include)
+set(NEX_LIBRARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/lib)
+
+add_subdirectory(external/pybind11)
 add_subdirectory(lib)
 add_subdirectory(applications)
+add_subdirectory(python)
