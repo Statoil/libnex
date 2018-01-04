@@ -91,10 +91,6 @@ namespace is {
             std::copy(x.begin(), x.end(), value.begin());
             std::replace(value.begin(), value.end(), '\0', ' ');
         }
-        classname( const char (&x)[9] ) {
-            std::copy(std::begin(x), std::end(x), value.begin());
-            std::replace(value.begin(), value.end(), '\0', ' ');
-        }
         bool operator()( const NexusData& nd ) const {
             return this->value == nd.classname;
         }
@@ -108,10 +104,6 @@ namespace is {
             std::copy(x.begin(), x.end(), value.begin());
             std::replace(value.begin(), value.end(), '\0', ' ');
         }
-        instancename( const char (&x)[9] ) {
-            std::copy(std::begin(x), std::begin(x) + 8, value.begin());
-            std::replace(value.begin(), value.end(), '\0', ' ');
-        }
         bool operator()( const NexusData& nd ) const {
             return this->value == nd.instancename;
         }
@@ -123,10 +115,6 @@ namespace is {
             if (x.size() > value.max_size())
                 throw std::runtime_error("Could not make predicate, gived varname was larger than 8 bytes.");
             std::copy(x.begin(), x.end(), value.begin());
-            std::replace(value.begin(), value.end(), '\0', ' ');
-        }
-        varname( const char (&x)[9] ) {
-            std::copy(std::begin(x), std::end(x), value.begin());
             std::replace(value.begin(), value.end(), '\0', ' ');
         }
         bool operator()( const NexusData& nd ) const {
