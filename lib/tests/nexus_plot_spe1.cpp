@@ -140,8 +140,8 @@ void test_spe1_well_comulative_gas_injected(const NexusPlot& spe1) {
 
     test_assert_int_equal( well_1_cgi.size(), cgi_all_timesteps.size() );
     for (size_t i = 0; i < cgi_all_timesteps.size(); i++) {
-        test_assert_std_string_equal( get::varname_str(well_1_cgi[i]),
-                                      std::string { "CGI" } );
+        test_assert_string_equal( get::varname_str(well_1_cgi[i]).c_str(),
+                                      "CGI" );
         test_assert_float_equal( well_1_cgi[i].value, cgi_all_timesteps[i] );
     }
 }
@@ -178,10 +178,10 @@ void test_spe1_region_rgs00002_ts97_all_variables(const NexusPlot& spe1) {
     test_assert_int_equal( rgs00002_ts97_values.size(),
                            rgs00002_ts97.size() );
     for (size_t i = 0; i < rgs00002_ts97.size(); i++) {
-        test_assert_std_string_equal( get::classname_str(rgs00002_ts97[i]),
-                                      std::string { "REGION" } );
-        test_assert_std_string_equal( get::varname_str(rgs00002_ts97[i]),
-                                      spe1_varnames[3][i] );
+        auto cn = get::classname_str(rgs00002_ts97[i]);
+        auto vn = get::varname_str(rgs00002_ts97[i]);
+        test_assert_string_equal( cn.c_str(), spe1_classnames[3].c_str() );
+        test_assert_string_equal( vn.c_str(), spe1_varnames[3][i].c_str() );
         test_assert_float_equal( rgs00002_ts97[i].value,
                                  rgs00002_ts97_values[i] );
 
@@ -199,8 +199,8 @@ void test_spe1_class_varnames(const NexusPlot& plt) {
         test_assert_int_equal( vn.size(),
                                spe1_varnames_sorted.size() );
         for (size_t k = 0; k < vn.size(); k++) {
-            test_assert_std_string_equal( vn[k],
-                                          spe1_varnames_sorted[k] );
+            test_assert_string_equal( vn[k].c_str(),
+                                          spe1_varnames_sorted[k].c_str() );
         }
     }
 }
