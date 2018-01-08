@@ -75,7 +75,7 @@ namespace {
 void test_metric_conversions() {
     const nex::UnitSystem u( nex::UnitSystem::UnitType::metric_bars );
     std::default_random_engine gen;
-    std::uniform_real_distribution<float> dist( -1e20, 1e20 );
+    std::uniform_real_distribution<float> dist( -1e20f, 1e20f );
 
     test_single_conversion( u, nex::UnitSystem::Measure::compressibility,             dist(gen), 1.0f    );
     test_single_conversion( u, nex::UnitSystem::Measure::density,                     dist(gen), 1.0f    );

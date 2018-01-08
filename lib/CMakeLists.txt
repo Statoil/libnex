@@ -1,5 +1,4 @@
 project(libnex CXX)
-include(GNUInstallDirs)
 
 add_library(nex src/nexus_plot.cpp
                 src/unit.cpp
