@@ -1,5 +1,6 @@
+import datetime
 from .pynex import load as _load
-import pandas as pd
+import pandas
 
 
 def load(filename):
@@ -12,7 +13,7 @@ def load(filename):
     """
 
     raw = _load(filename)
-    df = pd.DataFrame([{
+    df = pandas.DataFrame([{
         'timestep': d.timestep,
         'time': d.time,
         'classname': d.classname,
@@ -20,4 +21,11 @@ def load(filename):
         'varname': d.varname,
         'value': d.value,
     } for d in raw._data])
+    df.start_date = datetime.datetime(
+        year=raw._header.year,
+        month=raw._header.month,
+        day=raw._header.day,
+    )
+    df.grid_dimensions = (raw._header.nx, raw._header.ny, raw._header.nz)
+    df.unit_system = raw._header.unit_system.name
     return df
