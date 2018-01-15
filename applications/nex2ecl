@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+import getopt
+import sys
+import nex
+
+usage_msg = """\
+nex2ecl [options]... <nexus_plt_file>
+Try 'nex2ecl --help' for more information."""
+
+help_msg = """\
+Usage:
+  nex2ecl [options]... <nexus_plt_file>
+  nex2ecl -h | --help
+Options:
+  -f --format                Format the output.
+  -F --field <field_name>    Specify which field <field_name> in a multifield
+                             dataset to output. Defaults to FIELD.
+  -h --help                  Show this screen.
+  -o --output <file>|<path>  Write output to files with basename <file> or place
+                             output at <path>. The argument is considered a
+                             <file> if it is not a directory and does not end
+                             with a trailing slash."""
+
+
+def main():
+    try:
+        options = "fF:ho:"
+        long_options = ["format", "field=", "help", "output="]
+        opts, args = getopt.getopt(sys.argv[1:], options, long_options)
+    except getopt.GetoptError as err:
+        # print help information and exit:
+        print(str(err))  # will print something like "option -a not recognized"
+        print(usage_msg)
+        sys.exit(1)
+
+    output_path = None
+    fmt = False
+    field = None
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            print(help_msg)
+            sys.exit()
+        elif o in ("-f", "--format"):
+            fmt = True
+        elif o in ("-F", "--field"):
+            field = a
+        elif o in ("-o", "--output"):
+            output_path = a
+        else:
+            assert False, "unhandled option " + str(o) + " " + a
+
+    if len(args) != 1:
+        print(usage_msg)
+        sys.exit(1)
+
+    if not output_path:
+        output_path = args[0]
+
+    plt = nex.load(args[0])
+    ecl_sum = nex._nex2ecl(plt, format=fmt, field=field, case=output_path)
+    ecl_sum.fwrite()
+
+
+if __name__ == "__main__":
+    main()
