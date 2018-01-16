@@ -11,3 +11,4 @@ __status__ = 'Production'
 __all__ = ['load']
 
 from .nex import load
+from .nex import _nex2ecl
