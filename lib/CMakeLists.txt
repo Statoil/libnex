@@ -35,3 +35,8 @@ foreach (name nexus_plot_load
     target_compile_options(${name} PRIVATE ${CPP_STANDARD})
     add_test(NAME ${name} COMMAND ${name})
 endforeach ()
+
+add_executable(testsuite tests/testsuite.cpp)
+target_link_libraries(testsuite catch2)
+target_include_directories(testsuite PRIVATE src/include)
+target_compile_options(testsuite PRIVATE ${CPP_STANDARD})
