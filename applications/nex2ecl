@@ -59,7 +59,7 @@ def main():
         output_path = args[0]
 
     plt = nex.load(args[0])
-    ecl_sum = nex._nex2ecl(plt, format=fmt, field=field, case=output_path)
+    ecl_sum = nex._nex2ecl(plt, output_path, format=fmt, field='FIELD')
     ecl_sum.fwrite()
 
 

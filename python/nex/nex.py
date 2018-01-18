@@ -1,4 +1,6 @@
 import datetime
+import textwrap
+import warnings
 from .pynex import load as _load
 import ecl.ecl as ecl
 import pandas
@@ -27,12 +29,14 @@ def load(filename):
         month=raw._header.month,
         day=raw._header.day,
     )
-    df.grid_dimensions = (raw._header.nx, raw._header.ny, raw._header.nz)
+    df.nx = raw._header.nx
+    df.ny = raw._header.ny
+    df.nz = raw._header.nz
     df._unit_system = raw._header.unit_system
     return df
 
-def _nex2ecl(plt, format=True, field='FIELD', case='NEW_CASE'):
 
+def _nex2ecl(plt, case, format=True, field='FIELD'):
     kw_nex2ecl = {
         "QOP": "OPR",
         "QWP": "WPR",
@@ -62,63 +66,71 @@ def _nex2ecl(plt, format=True, field='FIELD', case='NEW_CASE'):
         "OIP": "OIP",
         "WIP": "WIP",
         "GIP": "GIP",
-        "PAVH": "PR"}
-
-    inv_kw_nex2ecl = {v: k for k, v in kw_nex2ecl.iteritems()}
+        "PAVH": "PR",
+    }
 
     start_time = plt.start_date
-    nx = plt.grid_dimensions[0]
-    ny = plt.grid_dimensions[1]
-    nz = plt.grid_dimensions[2]
 
-    # Create EclSum Obj
     ecl_sum = ecl.EclSum.writer(
         case,
         start_time,
-        nx,
-        ny,
-        nz,
+        plt.nx,
+        plt.ny,
+        plt.nz,
         fmt_output=format,
         unified=True,
         time_in_days=True,
         key_join_string=':'
     )
 
+    times = plt.time.unique().tolist()
+    ecl_values = {}
 
-    # Add variables/create nodes
-    for var in plt[plt['classname'] == 'FIELD'].varname.unique():
-        if var in kw_nex2ecl:
-            ecl_unit = plt._unit_system.unit_str(var)
-            ecl_var = 'F' + kw_nex2ecl[var]
-            ecl_sum.add_variable(ecl_var, wgname=None, num=-1, unit=ecl_unit, default_value=0.0)
+    # Field
+    field = plt.loc[plt['classname'] == field]
+    for var in filter(kw_nex2ecl.__contains__, field.varname.unique()):
+        unit = plt._unit_system.unit_str(var)
+        conversion = plt._unit_system.conversion(var)
+        node = ecl_sum.add_variable('F{}'.format(kw_nex2ecl[var]),
+                                    wgname=None,
+                                    num=-1,
+                                    unit=unit,
+                                    default_value=0.0)
+        fv = field.loc[field['varname'] == var]
+        ecl_values[node.get_key1()] = {
+            time: fv[fv['time'] == time].value.iloc[0] * conversion
+            for time in times if time in fv.time.values
+        }
 
-    for var in plt[plt['classname'] == 'WELL'].varname.unique():
-        for inst in plt[(plt['classname'] == 'WELL') & (plt['varname'] == var) ].instancename.unique():
-            if var in kw_nex2ecl:
-                ecl_unit = plt._unit_system.unit_str(var)
-                ecl_var = 'W' + kw_nex2ecl[var]
-                ecl_sum.add_variable(ecl_var, wgname=inst, num=-1, unit=ecl_unit, default_value=0.0)
+    # Well
+    wells = plt.loc[plt['classname'] == 'WELL']
+    for well_name in wells.instancename.unique():
+        inst = wells.loc[wells['instancename'] == well_name]
+        for var in filter(kw_nex2ecl.__contains__, inst.varname.unique()):
+            unit = plt._unit_system.unit_str(var)
+            conversion = plt._unit_system.conversion(var)
+            node = ecl_sum.add_variable('W{}'.format(kw_nex2ecl[var]),
+                                        wgname=well_name,
+                                        num=-1,
+                                        unit=unit,
+                                        default_value=0.0)
+            iv = inst.loc[inst['varname'] == var]
+            ecl_values[node.get_key1()] = {
+                time: iv[iv['time'] == time].value.iloc[0] * conversion
+                for time in times if time in iv.time.values
+            }
 
-    # Create ecl timesteps
-    tsteps = [ecl_sum.add_t_step(plt.timestep.unique()[idx], sim_days)
-              for idx, sim_days in enumerate(plt.time.unique())]
+    failed = filter(lambda v: v not in kw_nex2ecl,
+                    plt.varname.unique().tolist())
+    if failed:
+        msg = "could not convert nexus variables:\n    {}"
+        failures = '\n    '.join(textwrap.wrap(', '.join(map(str, failed)), 76))
+        warnings.warn(msg.format(failures), RuntimeWarning)
 
-    # Add data
-    for tstep in tsteps:
-        for key in ecl_sum:
-            #Add FIELD
-            if (key[0] == 'F'):
-                tstep[key] = plt[(plt['classname'] == 'FIELD') &
-                                 (plt['varname'] == inv_kw_nex2ecl[key[1:]]) &
-                                 (plt['timestep'] == tstep.get_report())&
-                                 (plt['instancename'] == 'FIELD')].value.tolist()[0]
-            #Add WELL
-            elif (key[0] == 'W'):
-                tstep[key] = plt[(plt['classname'] == 'WELL') &
-                                 (plt['varname'] == inv_kw_nex2ecl[key[1:-2]]) &
-                                 (plt['timestep'] == tstep.get_report()) &
-                                 (plt['instancename'] == key[-1])].value.tolist()[0]
-            else:
-                pass
+    timesteps = [(ecl_sum.add_t_step(i + 1, t), t) for i, t in enumerate(times)]
+    for ts, time in timesteps:
+        for key, value in ecl_values.items():
+            if time in value:
+                ts[key] = value[time]
 
     return ecl_sum
