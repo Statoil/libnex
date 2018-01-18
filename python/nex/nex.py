@@ -36,7 +36,23 @@ def load(filename):
     return df
 
 
-def _nex2ecl(plt, case, format=True, field='FIELD'):
+class ConversionError(Exception):
+    def __init__(self, *args, **kwargs):
+        Exception.__init__(self, *args, **kwargs)
+
+
+def _nex2ecl(plt, case, format=True, field_name=None):
+    field_names = plt[(plt['classname'] == 'FIELD')].instancename.unique()
+    if len(field_names) > 1 and not field_name:
+        raise ConversionError('More than one field in plot', 1)
+    if len(field_names) > 0 and field_name not in field_names:
+        raise ConversionError('{} not in plot'.format(field_name), 2)
+
+    if len(field_names) > 1:
+        warnings.warn('Multifield model not supported by ecl')
+    if field_names.tolist() and not field_name:
+        field_name = field_names[0]
+
     kw_nex2ecl = {
         "QOP": "OPR",
         "QWP": "WPR",
@@ -70,7 +86,6 @@ def _nex2ecl(plt, case, format=True, field='FIELD'):
     }
 
     start_time = plt.start_date
-
     ecl_sum = ecl.EclSum.writer(
         case,
         start_time,
@@ -86,8 +101,7 @@ def _nex2ecl(plt, case, format=True, field='FIELD'):
     times = plt.time.unique().tolist()
     ecl_values = {}
 
-    # Field
-    field = plt.loc[plt['classname'] == field]
+    field = plt.loc[(plt['classname'] == 'FIELD') & (plt['instancename'] == field_name)]
     for var in filter(kw_nex2ecl.__contains__, field.varname.unique()):
         unit = plt._unit_system.unit_str(var)
         conversion = plt._unit_system.conversion(var)

@@ -17,7 +17,9 @@ Usage:
 Options:
   -f --format                Format the output.
   -F --field <field_name>    Specify which field <field_name> in a multifield
-                             dataset to output. Defaults to FIELD.
+                             dataset to output. Note that ecl does not support 
+                             multifield models. The output dataset may not be
+                             equivalent to the original nexus plot.
   -h --help                  Show this screen.
   -o --output <file>|<path>  Write output to files with basename <file> or place
                              output at <path>. The argument is considered a
@@ -80,9 +82,20 @@ def main():
             basename = plt_root
         case = os.path.join(dirname, basename.upper())
 
-    plt = nex.load(plt_path)
-    ecl_sum = nex._nex2ecl(plt, case, format=fmt, field=field)
-    ecl_sum.fwrite()
+    try:
+        plt = nex.load(plt_path)
+        ecl_sum = nex._nex2ecl(plt, case, format=fmt, field_name=field)
+        ecl_sum.fwrite()
+    except nex.ConversionError as e:
+        msg, code = e.args
+        if code == 1:
+            print('Multifield model not supported by ecl', file=sys.stderr)
+        elif code == 2:
+            print('The specified field is not in the nexus plot',
+                  file=sys.stderr)
+        else:
+            print('Unknown conversion error', file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
