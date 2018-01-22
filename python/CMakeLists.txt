@@ -21,7 +21,9 @@ add_custom_target(
                            ${CMAKE_CURRENT_BINARY_DIR}/test
 
     # Install python library to build folder for ctest
-    COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install_lib -d ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY}
+                                 build_ext --rpath $<TARGET_FILE_DIR:nex>
+                                 install_lib -d ${CMAKE_CURRENT_BINARY_DIR}
 
     # Install python library to a predicable location for the final install
     COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install_lib -d build/install
