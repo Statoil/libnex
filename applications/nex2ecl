@@ -89,7 +89,9 @@ def main():
     except nex.ConversionError as e:
         msg, code = e.args
         if code == 1:
-            print('Multifield model not supported by ecl', file=sys.stderr)
+            print('Multifield model not supported by ecl\n'
+                  'Try \'nex2ecl --help\' for more information.',
+                  file=sys.stderr)
         elif code == 2:
             print('The specified field is not in the nexus plot',
                   file=sys.stderr)

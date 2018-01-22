@@ -54,6 +54,8 @@ install:
     - mkdir libecl/build
     - pushd libecl/build
     - cmake .. -DBUILD_SHARED_LIBS=ON
+               -DPYTHON_EXECUTABLE=`which python`
+               -DENABLE_PYTHON=ON
     - sudo make install
     - popd
 
