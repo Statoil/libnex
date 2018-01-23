@@ -87,17 +87,14 @@ def main():
         ecl_sum = nex._nex2ecl(plt, case, format=fmt, field_name=field)
         ecl_sum.fwrite()
     except nex.ConversionError as e:
-        msg, code = e.args
+        _, code = e.args
         if code == 1:
-            print('Multifield model not supported by ecl\n'
-                  'Try \'nex2ecl --help\' for more information.',
-                  file=sys.stderr)
+            sys.exit('Multifield model not supported by ecl\n'
+                     'Try \'nex2ecl --help\' for more information.')
         elif code == 2:
-            print('The specified field is not in the nexus plot',
-                  file=sys.stderr)
+            sys.exit('The specified field is not in the nexus plot')
         else:
-            print('Unknown conversion error', file=sys.stderr)
-        sys.exit(1)
+            sys.exit('Unknown conversion error')
 
 
 if __name__ == "__main__":
