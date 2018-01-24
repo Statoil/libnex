@@ -64,9 +64,7 @@ def main():
     if not os.path.isfile(plt_path) and not plt_ext:
         plt_path += '.plt'
     if not os.path.isfile(plt_path):
-        print('{} does not exists'.format(os.path.abspath(plt_path)),
-              file=sys.stderr)
-        sys.exit(1)
+        sys.exit('{} does not exists'.format(os.path.abspath(plt_path)))
 
     if not output_path:
         case = plt_root.upper()
@@ -75,9 +73,7 @@ def main():
     else:
         dirname, basename = os.path.split(output_path)
         if dirname and not os.path.isdir(dirname):
-            print('{} does not exists'.format(os.path.abspath(dirname)),
-                  file=sys.stderr)
-            sys.exit(1)
+            sys.exit('{} does not exists'.format(os.path.abspath(dirname)))
         if not basename:
             basename = plt_root
         case = os.path.join(dirname, basename.upper())

@@ -30,7 +30,6 @@ pipeline {
                           ..
                     make install -j3
                     popd
-                    export LD_LIBRARY_PATH="\$root_dir/ecl_install/lib64:\$LD_LIBRARY_PATH"
 
                     mkdir nex_install
                     mkdir build

@@ -58,17 +58,16 @@ class TestLoad(unittest.TestCase):
 
         FOPR = list(ecl_sum.get_values('FOPR'))
         WGPT2 = list(ecl_sum.get_values('WGPT:2'))
-        self.assertTrue(ecl_sum.has_key('FOPR'))
-        self.assertTrue(ecl_sum.has_key('WGPT:2'))
+        self.assertIn('FOPR', ecl_sum)
+        self.assertIn('WGPT:2', ecl_sum)
         self.assertEqual(QOP, FOPR)
         self.assertEqual(CGP, WGPT2)
-
 
     # In nexus, instances aren't present in the dataset before the first
     # timestep they appear. In the dataset SPE1_delayedWell.plt, the well
     # instance "3" does not appear before timestep number 5. In ecl, however,
-    # the well is present from the beginning. Because of this, the indices where
-    # the data starts is different in the nex and ecl representations.
+    # the well is present from the beginning. Because of this, the indices
+    # where the data starts is different in the nex and ecl representations.
     def test_delayed_well(self):
         ecl_sum = nex._nex2ecl(self.plt_delayed, 'ECL_CASE', format=False,
                                field_name='FIELD')
@@ -79,7 +78,7 @@ class TestLoad(unittest.TestCase):
             (self.plt_delayed['varname'] == 'CGP')]['value'].tolist()
 
         WOPR3 = list(ecl_sum.get_values('WGPT:3'))
-        self.assertTrue(ecl_sum.has_key('WGPT:3'))
+        self.assertIn('WGPT:3', ecl_sum)
         self.assertEqual(CGP, WOPR3[4:])
 
     def test_multiple_fields(self):

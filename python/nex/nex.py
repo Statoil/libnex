@@ -37,12 +37,11 @@ def load(filename):
 
 
 class ConversionError(Exception):
-    def __init__(self, *args, **kwargs):
-        Exception.__init__(self, *args, **kwargs)
+    pass
 
 
 def _nex2ecl(plt, case, format=True, field_name=None):
-    field_names = plt[(plt['classname'] == 'FIELD')].instancename.unique()
+    field_names = plt[plt['classname'] == 'FIELD'].instancename.unique()
     if len(field_names) > 1 and not field_name:
         raise ConversionError('More than one field in plot', 1)
     if len(field_names) > 0 and field_name not in field_names:
@@ -50,7 +49,7 @@ def _nex2ecl(plt, case, format=True, field_name=None):
 
     if len(field_names) > 1:
         warnings.warn('Multifield model not supported by ecl')
-    if field_names.tolist() and not field_name:
+    if len(field_names) > 0 and not field_name:
         field_name = field_names[0]
 
     kw_nex2ecl = {
@@ -138,10 +137,12 @@ def _nex2ecl(plt, case, format=True, field_name=None):
                     plt.varname.unique().tolist())
     if failed:
         msg = "could not convert nexus variables:\n    {}"
-        failures = '\n    '.join(textwrap.wrap(', '.join(map(str, failed)), 76))
+        failures = '\n    '.join(textwrap.wrap(
+            ', '.join(map(str, failed)), 76))
         warnings.warn(msg.format(failures), RuntimeWarning)
 
-    timesteps = [(ecl_sum.add_t_step(i + 1, t), t) for i, t in enumerate(times)]
+    timesteps = [(ecl_sum.add_t_step(i + 1, t), t)
+                 for i, t in enumerate(times)]
     for ts, time in timesteps:
         for key, value in ecl_values.items():
             if time in value:
