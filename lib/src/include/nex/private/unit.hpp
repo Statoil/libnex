@@ -68,6 +68,8 @@ namespace nex {
         UnitSystem( std::string );
         UnitSystem( UnitType );
 
+        std::string name() const;
+
         Measure measure( const std::string& ) const;
 
         float conversion( Measure ) const;
@@ -79,7 +81,6 @@ namespace nex {
     private:
         UnitType unit;
         const char* const* unit_str_table;
-
     };
 
 } /* nex */

@@ -5,6 +5,11 @@ env:
         - PLAT=x86_64
         - UNICODE_WIDTH=32
 
+addons:
+  apt:
+    packages:
+    - liblapack-dev
+
 os:
     - linux
     - osx
@@ -17,6 +22,8 @@ services: docker
 sudo: required
 
 matrix:
+    allow_failures:
+        - os: osx
     fast_finish: true
     exclude:
         - os: osx
@@ -50,16 +57,18 @@ before_install:
 install:
     - pip install setuptools setuptools-scm
     - pip install -r requirements.txt
-    - git clone https://github.com/Statoil/libecl.git
+    - git clone --recursive https://github.com/Statoil/libecl.git
     - mkdir libecl/build
     - pushd libecl/build
+    - pip install -r ../requirements.txt
     - cmake .. -DBUILD_SHARED_LIBS=ON
+               -DPYTHON_EXECUTABLE=`which python`
+               -DENABLE_PYTHON=ON
     - sudo make install
+    - export PYTHONPATH=/usr/local/lib/python2.7/dist-packages/:$PYTHONPATH
     - popd
 
 script:
-    - echo $VIRTUAL_ENV
-    - python -c "import setuptools;"
     - mkdir build
     - pushd build
     - cmake .. -DPYTHON_EXECUTABLE=`which python`
