@@ -28,7 +28,6 @@ endforeach ()
 
 foreach (name nexus_plot_load
               nexus_plot_spe1
-              nexus_nexus2ecl
               nexus_unit)
     add_executable(${name} tests/${name}.cpp)
     target_link_libraries(${name} nex)
