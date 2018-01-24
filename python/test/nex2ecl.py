@@ -32,16 +32,26 @@ class TestLoad(unittest.TestCase):
         self.assertEqual(len(ecl_sum), 10)
 
     def test_file_io(self):
+        QOP = self.plt.loc[
+            (self.plt['classname'] == 'FIELD') &
+            (self.plt['instancename'] == 'FIELD') &
+            (self.plt['varname'] == 'QOP')]['value'].tolist()
+
         ecl_sum = nex._nex2ecl(self.plt, 'ECL_CASE', format=False,
                                field_name='FIELD')
         ecl_sum.fwrite()
         self.assertTrue(os.path.exists(
             os.path.join(os.getcwd(),'ECL_CASE.SMSPEC')))
         ecl_sum_reload = ecl.EclSum('ECL_CASE')
+        dates_reload = ecl_sum_reload.dates
+        dates_plt = [self.plt.start_date+datetime.timedelta(days = x)
+                     for x in self.plt.time.unique()]
         self.assertEqual(len(ecl_sum), len(ecl_sum_reload))
         self.assertEqual(len(list(ecl_sum)), len(list(ecl_sum_reload)))
         self.assertEqual(list(ecl_sum.get_values('FOPR')),
                          list(ecl_sum_reload.get_values('FOPR')))
+        self.assertEqual(QOP, list(ecl_sum_reload.get_values('FOPR')))
+        self.assertEqual(dates_reload, dates_plt)
 
     def test_nex2ecl(self):
         ecl_sum = nex._nex2ecl(self.plt, 'ECL_CASE', format=False,
@@ -89,3 +99,5 @@ class TestLoad(unittest.TestCase):
         with self.assertRaises(nex.ConversionError):
             nex._nex2ecl(self.plt_delayed, 'ECL_CASE', format=False,
                          field_name='INVALID')
+        with self.assertRaises(nex.ConversionError):
+            nex._nex2ecl(self.plt_delayed, 'ECL_CASE', format=False)
