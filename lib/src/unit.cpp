@@ -165,6 +165,28 @@ UnitSystem::Measure UnitSystem::measure( const std::string& varname ) const {
     return Measure::identity;
 }
 
+std::string UnitSystem::name() const {
+    switch (this->unit) {
+    case UnitSystem::UnitType::field:
+        return std::string{ "FIELD" };
+        break;
+    case UnitSystem::UnitType::lab:
+        return std::string{ "LAB" };
+        break;
+    case UnitSystem::UnitType::metric_kPa:
+        return std::string{ "METRIC" };
+        break;
+    case UnitSystem::UnitType::metric_kg_cm2:
+        return std::string{ "METKG" };
+        break;
+    case UnitSystem::UnitType::metric_bars:
+        return std::string{ "METBAR" };
+        break;
+    default:
+        throw std::runtime_error("UnitSystem error");
+    }
+}
+
 float UnitSystem::conversion( Measure m ) const {
     int ui = static_cast<int>( this->unit );
     int mi = static_cast<int>( m );
