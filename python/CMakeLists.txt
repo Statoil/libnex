@@ -68,6 +68,7 @@ foreach (plt ${plts})
 endforeach ()
 
 set(py-test ${PYTHON_EXECUTABLE} -m unittest -v)
+add_test(NAME python.hist COMMAND ${py-test} test.hist)
 add_test(NAME python.load COMMAND ${py-test} test.load)
 add_test(NAME python.nex2ecl COMMAND ${py-test} test.nex2ecl)
 add_test(NAME python.units COMMAND ${py-test} test.units)

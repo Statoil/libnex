@@ -17,7 +17,7 @@ Usage:
 Options:
   -f --format                Format the output.
   -F --field <field_name>    Specify which field <field_name> in a multifield
-                             dataset to output. Note that ecl does not support 
+                             dataset to output. Note that ecl does not support
                              multifield models. The output dataset may not be
                              equivalent to the original nexus plot.
   -h --help                  Show this screen.
@@ -80,7 +80,7 @@ def main():
 
     try:
         plt = nex.load(plt_path)
-        ecl_sum = nex._nex2ecl(plt, case, format=fmt, field_name=field)
+        ecl_sum = nex._nex2ecl.nex2ecl(plt, case, format=fmt, field_name=field)
         ecl_sum.fwrite()
     except nex.ConversionError as e:
         _, code = e.args
