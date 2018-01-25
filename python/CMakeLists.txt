@@ -12,6 +12,15 @@ set_target_properties(pynex PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/nex
 )
 
+pybind11_add_module(pynex_no_rpath nex/nex.cpp)
+target_link_libraries(pynex_no_rpath PRIVATE nex)
+target_include_directories(pynex_no_rpath PUBLIC ${NEX_INCLUDE_DIR})
+set_target_properties(pynex_no_rpath PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/build/install/nex
+    SKIP_BUILD_RPATH TRUE
+    OUTPUT_NAME pynex
+)
+
 add_custom_target(
     nex-python ALL
     COMMENT "Building python library with setup.py"
@@ -28,20 +37,24 @@ add_custom_target(
     # Install python library to a predicable location for the final install
     COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install_lib -d build/install
 )
-add_dependencies(nex-python nex pynex)
+add_dependencies(nex-python pynex pynex_no_rpath)
 
 # Install pynex into the directory that is to be installed by python
-install(TARGETS pynex DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/build/install/nex)
-install(CODE "execute_process(
-    COMMAND
-        ${PYTHON_EXECUTABLE} ${SETUP_PY}
-            install_egg_info --install-dir ${CMAKE_CURRENT_BINARY_DIR}
-            egg_info --egg-base ${CMAKE_CURRENT_BINARY_DIR}
-            install_lib --build-dir build/install
-            install --prefix=${CMAKE_INSTALL_PREFIX}
-                    --single-version-externally-managed
-                    --record installed-files
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+install(CODE "
+if (DEFINED ENV{DESTDIR})
+    get_filename_component(abs-destdir \"\$ENV{DESTDIR}\" ABSOLUTE)
+    set(root_destdir --root=\${abs-destdir})
+endif()
+execute_process(COMMAND
+    ${PYTHON_EXECUTABLE} ${SETUP_PY}
+        install_egg_info --install-dir ${CMAKE_CURRENT_BINARY_DIR}
+        egg_info --egg-base ${CMAKE_CURRENT_BINARY_DIR}
+        install_lib --build-dir build/install
+        install --prefix=${CMAKE_INSTALL_PREFIX}
+                --single-version-externally-managed
+                --record installed-files
+                \${root_destdir}
+WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )")
 
 if(NOT BUILD_TESTING)
