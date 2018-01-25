@@ -92,3 +92,8 @@ class TestNex2Ecl(unittest.TestCase):
                     field_name='INVALID')
         with self.assertRaises(ConversionError):
             nex2ecl(self.plt_delayed, 'ECL_CASE', format=False)
+
+
+if __name__ == '__main__':
+    unittest.main()
+

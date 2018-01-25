@@ -1,4 +1,5 @@
 from .nex import load
+from .historical import load_historical
 import _nex2ecl
 
 __version__ = '0.0.2'

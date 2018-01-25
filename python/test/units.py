@@ -23,3 +23,7 @@ class TestLoad(unittest.TestCase):
         self.assertEqual(val1_conv, 1.0)
         self.assertEqual(val2_conv, 1.0)
         self.assertEqual(val3_conv, 1.0)
+
+
+if __name__ == '__main__':
+    unittest.main()
