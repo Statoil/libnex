@@ -26,17 +26,11 @@ foreach (plt ${plts})
     configure_file(${plt} test-data/${fl} COPYONLY)
 endforeach ()
 
-foreach (name nexus_plot_load
-              nexus_plot_spe1
-              nexus_unit)
-    add_executable(${name} tests/${name}.cpp)
-    target_link_libraries(${name} nex)
-    target_include_directories(${name} PRIVATE src/include)
-    target_compile_options(${name} PRIVATE ${CPP_STANDARD})
-    add_test(NAME ${name} COMMAND ${name})
-endforeach ()
-
-add_executable(testsuite tests/testsuite.cpp)
-target_link_libraries(testsuite catch2)
+add_executable(testsuite tests/testsuite.cpp tests/load.cpp tests/spe1.cpp
+               tests/units.cpp)
+target_link_libraries(testsuite catch2 nex)
 target_include_directories(testsuite PRIVATE src/include)
 target_compile_options(testsuite PRIVATE ${CPP_STANDARD})
+add_test(NAME load COMMAND testsuite [load])
+add_test(NAME spe1 COMMAND testsuite [spe1])
+add_test(NAME units COMMAND testsuite [units])
