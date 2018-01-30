@@ -63,7 +63,8 @@ install:
     - pip install -r ../requirements.txt
     - cmake .. -DBUILD_SHARED_LIBS=ON
                -DPYTHON_EXECUTABLE=`which python`
-               -DENABLE_PYTHON=ON
+               -DENABLE_PYTHON=ON \
+               -DINSTALL_ERT_LEGACY=ON
     - sudo make install
     - export PYTHONPATH=/usr/local/lib/python2.7/dist-packages/:$PYTHONPATH
     - popd
