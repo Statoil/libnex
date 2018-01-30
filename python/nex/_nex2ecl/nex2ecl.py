@@ -140,7 +140,7 @@ def nex2ecl(
         msg = "could not convert nexus variables:\n    {}"
         failures = '\n    '.join(textwrap.wrap(
             ', '.join(map(str, failed)), 76))
-        warnings.warn(msg.format(failures), RuntimeWarning)
+        warnings.warn(msg.format(failures))
 
     timesteps = [(ecl_sum.add_t_step(i + 1, t), t)
                  for i, t in enumerate(times)]
