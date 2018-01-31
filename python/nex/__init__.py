@@ -13,4 +13,4 @@ __maintainer__ = __author__
 __email__ = 'fg_gpl@statoil.com'
 __status__ = 'Production'
 
-__all__ = ['load', '_nex2ecl']
+__all__ = ['load']

@@ -9,10 +9,7 @@ try:
 except ImportError:
     from ert.ecl import EclSum
 
-try:
-    from ecl.util.test import TestAreaContext
-except ImportError:
-    from ert.test import TestAreaContext
+from ecl.test import TestAreaContext
 
 
 class TestNex2Ecl(unittest.TestCase):

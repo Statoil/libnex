@@ -1,8 +1,13 @@
 import unittest
 import nex
 import pandas
+
+try:
+    from ecl.summary import EclSum
+except ImportError:
+    from ert.ecl import EclSum
+
 from ecl.test import TestAreaContext
-from ecl.ecl import EclSum
 
 
 class TestHistorical(unittest.TestCase):

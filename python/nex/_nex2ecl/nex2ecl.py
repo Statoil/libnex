@@ -1,7 +1,11 @@
 import textwrap
 import warnings
-import ecl.ecl as ecl
 from datetime import timedelta
+
+try:
+    from ecl.summary import EclSum
+except ImportError:
+    from ert.ecl import EclSum
 
 
 class ConversionError(Exception):
@@ -74,7 +78,7 @@ def __interp_hist(start_date, sample_dates, hplt, field_name=None):
 
     hist_dates = [ecl_sum.iget_date(i) for i in range(len(ecl_sum))]
     fst_date, snd_date = min(hist_dates), max(hist_dates)
-    clamped_dates = filter(lambda d: fst_date < d < snd_date, sample_dates)
+    clamped_dates = [d for d in sample_dates if fst_date <= d <= snd_date]
 
     vectors = []
     for key in ecl_sum:
@@ -99,7 +103,7 @@ def nex2ecl(
     if len(field_names) > 0 and not field_name:
         field_name = field_names[0]
 
-    ecl_sum = ecl.EclSum.writer(
+    ecl_sum = EclSum.writer(
         case,
         plt.start_date,
         plt.nx,
@@ -134,8 +138,7 @@ def nex2ecl(
                 unit=n.unit)
             ecl_values.append((node.get_key1(), v))
 
-    failed = filter(lambda v: v not in __kw_nex2ecl,
-                    plt.varname.unique().tolist())
+    failed = [v for v in plt.varname.unique() if v not in __kw_nex2ecl]
     if warn and failed:
         msg = "could not convert nexus variables:\n    {}"
         failures = '\n    '.join(textwrap.wrap(
