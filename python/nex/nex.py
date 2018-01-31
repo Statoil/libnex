@@ -2,8 +2,11 @@ import datetime
 import textwrap
 import warnings
 from .pynex import load as _load
-import ecl.ecl as ecl
 import pandas
+try:
+    from ecl.summary import EclSum
+except ImportError:
+    from ert.ecl import EclSum
 
 
 def load(filename):
@@ -85,7 +88,7 @@ def _nex2ecl(plt, case, format=True, field_name=None):
     }
 
     start_time = plt.start_date
-    ecl_sum = ecl.EclSum.writer(
+    ecl_sum = EclSum.writer(
         case,
         start_time,
         plt.nx,

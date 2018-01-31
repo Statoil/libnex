@@ -25,6 +25,7 @@ pipeline {
                     /project/res/x86_64_RH_6/bin/cmake \
                           -DBUILD_SHARED_LIBS=ON \
                           -DENABLE_PYTHON=ON \
+                          -DINSTALL_ERT_LEGACY=ON \
                           -DCMAKE_CXX_COMPILER=/opt/rh/devtoolset-3/root/usr/bin/g++ \
                           -DCMAKE_INSTALL_PREFIX=\$root_dir/ecl_install \
                           ..

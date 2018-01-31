@@ -2,8 +2,16 @@ import datetime
 import unittest
 import os
 import nex
-import ecl.ecl as ecl
-from ecl.test import TestAreaContext
+
+try:
+    from ecl.summary import EclSum
+except ImportError:
+    from ert.ecl import EclSum
+
+try:
+    from ecl.util.test import TestAreaContext
+except ImportError:
+    from ert.test import TestAreaContext
 
 
 class TestNex2Ecl(unittest.TestCase):
@@ -15,7 +23,7 @@ class TestNex2Ecl(unittest.TestCase):
     def test_ecl_sum(self):
         ecl_sum = nex._nex2ecl(self.plt, 'ECL_CASE', format=False,
                                field_name='FIELD')
-        self.assertTrue(isinstance(ecl_sum, ecl.ecl_sum.EclSum))
+        self.assertTrue(isinstance(ecl_sum, EclSum))
 
         start_date = ecl_sum.start_date
         self.assertEqual(start_date, datetime.date(1980, 1, 1))
@@ -32,7 +40,7 @@ class TestNex2Ecl(unittest.TestCase):
             self.assertTrue(os.path.exists(
                 os.path.join(os.getcwd(), 'ECL_CASE.SMSPEC')))
 
-            ecl_sum_loaded = ecl.EclSum('ECL_CASE')
+            ecl_sum_loaded = EclSum('ECL_CASE')
             self.assertEqual(len(ecl_sum), len(ecl_sum_loaded))
             self.assertIn('WGPT:2', ecl_sum_loaded)
 
