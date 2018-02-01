@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(nex)
-set(PACKAGE_VERSION 0.0.2)
+set(PACKAGE_VERSION 0.0.3)
 
 include(CheckFunctionExists)
 include(CheckIncludeFile)
