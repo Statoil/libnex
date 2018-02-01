@@ -2,7 +2,7 @@ from .nex import load
 from .historical import load_historical
 import _nex2ecl
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 __author__ = 'Software Innovation Bergen, Statoil ASA'
 
 __copyright__ = 'Copyright 2017, Statoil ASA'
