@@ -24,3 +24,7 @@ class TestLoad(unittest.TestCase):
             2811901.0, 3147919.0, 3459321.25, 3748449.5, 4011785.75
         ]
         self.assertEqual(COP0, COP1)
+
+
+if __name__ == '__main__':
+    unittest.main()

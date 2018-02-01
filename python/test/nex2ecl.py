@@ -2,16 +2,14 @@ import datetime
 import unittest
 import os
 import nex
+from nex._nex2ecl import nex2ecl, ConversionError
 
 try:
     from ecl.summary import EclSum
 except ImportError:
     from ert.ecl import EclSum
 
-try:
-    from ecl.util.test import TestAreaContext
-except ImportError:
-    from ert.test import TestAreaContext
+from ecl.test import TestAreaContext
 
 
 class TestNex2Ecl(unittest.TestCase):
@@ -21,8 +19,8 @@ class TestNex2Ecl(unittest.TestCase):
         cls.plt_delayed = nex.load('test-data/SPE1_delayedWell.plt')
 
     def test_ecl_sum(self):
-        ecl_sum = nex._nex2ecl(self.plt, 'ECL_CASE', format=False,
-                               field_name='FIELD')
+        ecl_sum = nex2ecl(self.plt, 'ECL_CASE', format=False,
+                          field_name='FIELD')
         self.assertTrue(isinstance(ecl_sum, EclSum))
 
         start_date = ecl_sum.start_date
@@ -34,7 +32,7 @@ class TestNex2Ecl(unittest.TestCase):
 
     def test_file_io(self):
         with TestAreaContext('test_file_io'):
-            ecl_sum = nex._nex2ecl(
+            ecl_sum = nex2ecl(
                 self.plt, 'ECL_CASE', format=False, field_name='FIELD')
             ecl_sum.fwrite()
             self.assertTrue(os.path.exists(
@@ -57,8 +55,8 @@ class TestNex2Ecl(unittest.TestCase):
             self.assertEqual(dates_loaded, dates_plt)
 
     def test_nex2ecl(self):
-        ecl_sum = nex._nex2ecl(self.plt, 'ECL_CASE', format=False,
-                               field_name='FIELD')
+        ecl_sum = nex2ecl(self.plt, 'ECL_CASE', format=False,
+                          field_name='FIELD')
         QOP = self.plt.loc[
             (self.plt['classname'] == 'FIELD') &
             (self.plt['instancename'] == 'FIELD') &
@@ -72,8 +70,8 @@ class TestNex2Ecl(unittest.TestCase):
     # the well is present from the beginning. Because of this, the indices
     # where the data starts is different in the nex and ecl representations.
     def test_delayed_well(self):
-        ecl_sum = nex._nex2ecl(self.plt_delayed, 'ECL_CASE', format=False,
-                               field_name='FIELD')
+        ecl_sum = nex2ecl(self.plt_delayed, 'ECL_CASE', format=False,
+                          field_name='FIELD')
         CGP = self.plt_delayed.loc[
             (self.plt_delayed['classname'] == 'WELL') &
             (self.plt_delayed['instancename'] == '3') &
@@ -82,12 +80,17 @@ class TestNex2Ecl(unittest.TestCase):
         self.assertEqual(CGP, WOPR3[4:])
 
     def test_multiple_fields(self):
-        nex._nex2ecl(self.plt_delayed, 'ECL_CASE', format=False,
-                     field_name='FIELD')
-        nex._nex2ecl(self.plt_delayed, 'ECL_CASE', format=False,
-                     field_name='NETWORK')
-        with self.assertRaises(nex.ConversionError):
-            nex._nex2ecl(self.plt_delayed, 'ECL_CASE', format=False,
-                         field_name='INVALID')
-        with self.assertRaises(nex.ConversionError):
-            nex._nex2ecl(self.plt_delayed, 'ECL_CASE', format=False)
+        nex2ecl(self.plt_delayed, 'ECL_CASE', format=False,
+                field_name='FIELD')
+        nex2ecl(self.plt_delayed, 'ECL_CASE', format=False,
+                field_name='NETWORK')
+        with self.assertRaises(ConversionError):
+            nex2ecl(self.plt_delayed, 'ECL_CASE', format=False,
+                    field_name='INVALID')
+        with self.assertRaises(ConversionError):
+            nex2ecl(self.plt_delayed, 'ECL_CASE', format=False)
+
+
+if __name__ == '__main__':
+    unittest.main()
+

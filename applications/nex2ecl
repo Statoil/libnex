@@ -1,70 +1,57 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import getopt
+import argparse
 import nex
 import os
 import sys
 
-usage_msg = """\
-nex2ecl [options]... <nexus_plt_file>
-Try 'nex2ecl --help' for more information."""
-
-help_msg = """\
-Usage:
-  nex2ecl [options]... <nexus_plt_file>
-  nex2ecl -h | --help
-Options:
-  -f --format                Format the output.
-  -F --field <field_name>    Specify which field <field_name> in a multifield
-                             dataset to output. Note that ecl does not support 
-                             multifield models. The output dataset may not be
-                             equivalent to the original nexus plot.
-  -h --help                  Show this screen.
-  -o --output <file>|<path>  Write output to files with basename <file> or place
-                             output at <path>. The argument is considered a
-                             <file> if it is not a directory and does not end
-                             with a trailing slash."""
-
 
 def main():
-    try:
-        options = "fF:ho:"
-        long_options = ["format", "field=", "help", "output="]
-        opts, args = getopt.getopt(sys.argv[1:], options, long_options)
-    except getopt.GetoptError as err:
-        # print help information and exit:
-        print(str(err))  # will print something like "option -a not recognized"
-        print(usage_msg)
-        sys.exit(1)
+    parser = argparse.ArgumentParser(
+        description='nex2ecl - convert nex plot to ecl Summary')
+    parser.add_argument('plt')
+    parser.add_argument('-f',
+                        '--format',
+                        action="store_true",
+                        help='Format the output')
+    parser.add_argument('-F',
+                        '--field',
+                        help=('Specify which field FIELD in a multifield '
+                              'dataset to output. Note that ecl does not '
+                              'support multifield models. The output dataset '
+                              'may not be equivalent to the original nex '
+                              'plot.'))
+    parser.add_argument('-H',
+                        '--historical',
+                        help=('Include historical data from file HISTORICAL '
+                              'in the output summary.'))
+    parser.add_argument('-o',
+                        '--output',
+                        help=('Write output to files with basename OUTPUT or '
+                              'place output in directory OUTPUT.'))
 
-    output_path = None
-    fmt = False
-    field = None
-    for o, a in opts:
-        if o in ("-h", "--help"):
-            print(help_msg)
-            sys.exit()
-        elif o in ("-f", "--format"):
-            fmt = True
-        elif o in ("-F", "--field"):
-            field = a
-        elif o in ("-o", "--output"):
-            output_path = a
-        else:
-            assert False, "unhandled option " + str(o) + " " + a
 
-    if len(args) != 1:
-        print(usage_msg)
-        sys.exit(1)
+    args = parser.parse_args()
+    field = args.field
+    fmt = args.format
+    hst_path = args.historical
+    output_path = args.output
+    plt_path = args.plt
 
-    plt_path = args[0]
     plt_dirname, plt_basename = os.path.split(plt_path)
     plt_root, plt_ext = os.path.splitext(plt_basename)
     if not os.path.isfile(plt_path) and not plt_ext:
         plt_path += '.plt'
     if not os.path.isfile(plt_path):
         sys.exit('{} does not exists'.format(os.path.abspath(plt_path)))
+
+    if hst_path:
+        hst_root, hst_ext = os.path.splitext(hst_path)
+        if not os.path.isfile(hst_path) and not hst_ext:
+            hst_path += '.csv'
+        if not os.path.isfile(hst_path):
+            sys.exit('{} does not exists'.format(os.path.abspath(hst_path)))
 
     if not output_path:
         case = plt_root.upper()
@@ -80,9 +67,12 @@ def main():
 
     try:
         plt = nex.load(plt_path)
-        ecl_sum = nex._nex2ecl(plt, case, format=fmt, field_name=field)
+        hplt = None if not hst_path else nex.load_historical(
+            hst_path, plt.nx, plt.ny, plt.nz, plt._unit_system)
+        ecl_sum = nex._nex2ecl.nex2ecl(
+            plt, case, format=fmt, field_name=field, hist_data=hplt)
         ecl_sum.fwrite()
-    except nex.ConversionError as e:
+    except nex._nex2ecl.ConversionError as e:
         _, code = e.args
         if code == 1:
             sys.exit('Multifield model not supported by ecl\n'
