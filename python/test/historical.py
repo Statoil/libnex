@@ -7,7 +7,7 @@ try:
 except ImportError:
     from ert.ecl import EclSum
 
-from ecl.test import TestAreaContext
+from ecl.util.test import TestAreaContext
 
 
 class TestHistorical(unittest.TestCase):
