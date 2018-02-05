@@ -4,6 +4,8 @@ env:
     global:
         - PLAT=x86_64
         - UNICODE_WIDTH=32
+        - MB_PYTHON_VERSION=$TRAVIS_PYTHON_VERSION
+        - SCAN=""
 
 addons:
   apt:
@@ -20,31 +22,30 @@ compiler:
 
 services: docker
 sudo: required
+python:
+      - 2.7
+      - 3.6
 
 matrix:
     allow_failures:
-        - os: osx
+        - env: MB_PYTHON_VERSION=3.6
+        - python: 3.6
     fast_finish: true
     exclude:
         - os: osx
     include:
         - os: linux
           compiler: clang
-          env: MB_PYTHON_VERSION=3.6
+          env: SCAN="scan-build --status-bugs"
+
         - os: osx
           language: generic
+          python: 2.7
           env: MB_PYTHON_VERSION=2.7
+
         - os: osx
           language: generic
-          env: MB_PYTHON_VERSION=3.4
-        - os: osx
-          language: generic
-          env: MB_PYTHON_VERSION=3.5
-        - os: osx
-          language: generic
-          env: MB_PYTHON_VERSION=3.6
-        - os: linux
-          compiler: gcc
+          python: 3.6
           env: MB_PYTHON_VERSION=3.6
 
 before_install:
@@ -55,6 +56,8 @@ before_install:
     - before_install
 
 install:
+    - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python${MB_PYTHON_VERSION}/site-packages
+    - export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python${MB_PYTHON_VERSION}/dist-packages
     - pip install setuptools setuptools-scm
     - pip install -r requirements.txt
     - git clone --recursive https://github.com/Statoil/libecl.git
@@ -64,14 +67,12 @@ install:
     - cmake .. -DBUILD_SHARED_LIBS=ON
                -DPYTHON_EXECUTABLE=`which python`
                -DENABLE_PYTHON=ON
-               -DINSTALL_ERT_LEGACY=ON
     - sudo make install
-    - export PYTHONPATH=/usr/local/lib/python2.7/dist-packages/:$PYTHONPATH
     - popd
 
 script:
     - mkdir build
     - pushd build
-    - cmake .. -DPYTHON_EXECUTABLE=`which python`
+    - $SCAN cmake .. -DPYTHON_EXECUTABLE=`which python`
     - make
     - ctest --output-on-failure -VV
