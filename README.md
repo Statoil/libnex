@@ -1,5 +1,7 @@
 # nex
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/347b190116834380936d533d24b99954)](https://app.codacy.com/app/ReedOnly/nex?utm_source=github.com&utm_medium=referral&utm_content=Statoil/nex&utm_campaign=badger)
+
 ## Installation
 
 To build nex you need:
