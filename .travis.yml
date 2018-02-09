@@ -27,9 +27,6 @@ python:
       - 3.6
 
 matrix:
-    allow_failures:
-        - env: MB_PYTHON_VERSION=3.6
-        - python: 3.6
     fast_finish: true
     exclude:
         - os: osx
