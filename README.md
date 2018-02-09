@@ -7,7 +7,7 @@
 ## Introduction ##
 Nex2ecl is an application for converting Nexus plot files to Eclipse
 summaries. In the current version nex is supported on Linux and OSX. After
-installation the application can be launched from terminal with the command
+installation the application can be run from terminal with the command
 `nex2ecl`.
 
 ## Installation ##
