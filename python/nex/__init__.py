@@ -1,8 +1,6 @@
-from __future__ import absolute_import
-
 from .nex import load
 from .historical import load_historical
-import nex._nex2ecl as _nex2ecl
+import _nex2ecl
 
 __version__ = '0.0.3'
 __author__ = 'Software Innovation Bergen, Statoil ASA'
@@ -15,4 +13,4 @@ __maintainer__ = __author__
 __email__ = 'fg_gpl@statoil.com'
 __status__ = 'Production'
 
-__all__ = ['load', 'load_historical']
+__all__ = ['load']
