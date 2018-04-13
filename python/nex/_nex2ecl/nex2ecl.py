@@ -95,7 +95,7 @@ def nex2ecl(
     field_names = plt[plt['classname'] == 'FIELD'].instancename.unique()
     if len(field_names) > 1 and not field_name:
         raise ConversionError('More than one field in plot', 1)
-    if len(field_names) > 0 and field_name not in field_names:
+    if field_name and len(field_names) > 0 and field_name not in field_names:
         raise ConversionError('{} not in plot'.format(field_name), 2)
 
     if warn and len(field_names) > 1:
