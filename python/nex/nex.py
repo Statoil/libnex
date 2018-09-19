@@ -11,14 +11,16 @@ def load(filename):
     """
 
     raw = _load(filename)
-    df = pandas.DataFrame([{
-        'timestep': d.timestep,
-        'time': d.time,
-        'classname': d.classname,
-        'instancename': d.instancename,
-        'varname': d.varname,
-        'value': d.value,
-    } for d in raw._data])
+    D = raw._data
+    df = pandas.DataFrame()
+
+    df['timestep'] = [d.timestep for d in D]
+    df['time'] = [d.time for d in D]
+    df['classname'] = [d.classname for d in D]
+    df['instancename'] = [d.instancename for d in D]
+    df['varname'] = [d.varname for d in D]
+    df['value'] = [d.value for d in D]
+
     df.start_date = datetime.datetime(
         year=raw._header.year,
         month=raw._header.month,
